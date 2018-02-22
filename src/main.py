@@ -24,8 +24,20 @@ def main():
     df_norm = df.copy()
     df_norm.iloc[:, 1:] = scipy.stats.zscore(df.iloc[:, 1:], axis=0)
 
-    display(df.head())
+    df_diff = (df.iloc[:, 1:] - df.iloc[:, 1:].shift())[1:]
+    df_diff = pd.concat([df.Date[1:], df_diff], axis=1)
     
+    df_norm_diff = (df_norm.iloc[:, 1:] - df_norm.iloc[:, 1:].shift())[1:]
+    df_norm_diff = pd.concat([df.Date[1:], df_norm_diff], axis=1)
+
+def set_data(df, target_label, length_for_times, after_times):
+    """
+    input: DataFrame, target_label, length_for_times, after_times
+    output: X, y
+    """
+
+    df_tmp = df.shift()
     
+
 if __name__=="__main__":
     main()
