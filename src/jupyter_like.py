@@ -51,11 +51,11 @@ df_norm_diff.head()
 # df_norm_diff.plot(x="Date", y="n225_CLOSE", figsize=[10, 4])
 
 #%%
-# 各特徴量の関係をプロット
-sns.pairplot(df.iloc[:, 1:])
-sns.pairplot(df_norm.iloc[:, 1:])
-sns.pairplot(df_diff.iloc[:, 1:])
-sns.pairplot(df_norm_diff.iloc[:, 1:])
+# 各特徴量の関係をプロット(重い)
+# sns.pairplot(df.iloc[:, 1:])
+# sns.pairplot(df_norm.iloc[:, 1:])
+# sns.pairplot(df_diff.iloc[:, 1:])
+# sns.pairplot(df_norm_diff.iloc[:, 1:])
 
 #%%
 # 各データフレームの統計量を表示
@@ -65,5 +65,31 @@ display(df_diff.describe())
 display(df_norm_diff.describe())
 
 #%%
-df.n225_CLOSE
+X = []
+X_tmp = []
+y = []
+y_tmp = []
 
+length_for_times = 5
+after_times = 5
+target_label = "n225_CLOSE"
+
+for i in range(len(df)-length_for_times-after_times):
+    X.append(df.iloc[i:i+length_for_times, 1:].as_matrix())
+    # X_tmp.append(df.iloc[i:i+length_for_times, 1:])
+X = np.array(X)
+
+# X_tmp[:5]
+
+for i in range(len(df)-length_for_times-after_times):
+    y.append(df[target_label].iloc[i-1+length_for_times+after_times])
+    # y_tmp.append(df[target_label].iloc[i-1+length_for_times+after_times])
+    # X_tmp.append(df.iloc[i-1+length_for_times+after_times])
+
+y =  np.array(y)
+
+print(X.shape)
+print(y.shape)
+
+display(df.iloc[:length_for_times + after_times])
+#%%
