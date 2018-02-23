@@ -1,5 +1,6 @@
 # coding: utf-8
 
+# libraryのインポートとか
 import numpy as np
 import pandas as pd
 import sklearn.linear_model
@@ -9,6 +10,11 @@ import sys
 from IPython.display import display
 import seaborn as sns
 import scipy
+from sklearn.model_selection import train_test_split
+from keras.models import Sequential
+from keras.layers import Dense, Activation, Dropout, BatchNormalization, LSTM
+from keras.optimizers import Adam, SGD, RMSprop
+
 plt.style.use("ggplot")
 
 def main():
@@ -36,7 +42,12 @@ def main():
 
     X, y = set_data(df, target_label,
                     length_for_times=length_for_times, after_times=after_times)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
 
+    n_in = X_train[2]
+    n_out = 1
+    
+    # set_model()
 
 def set_data(df, target_label, length_for_times=1, after_times=1):
     """
@@ -55,6 +66,11 @@ def set_data(df, target_label, length_for_times=1, after_times=1):
    
     return np.array(X), np.array(y)
 
+def set_model(n_in, n_out):
+    """
+    """
+    model = Sequential()
+    model.add(Dense())
 
 
 if __name__=="__main__":

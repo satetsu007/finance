@@ -88,8 +88,10 @@ for i in range(len(df)-length_for_times-after_times):
 
 y =  np.array(y)
 
-print(X.shape)
+print(X.shape[2])
 print(y.shape)
+
+
 
 display(df.iloc[:length_for_times + after_times])
 #%%
