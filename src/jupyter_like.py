@@ -75,7 +75,7 @@ after_times = 5
 target_label = "n225_CLOSE"
 
 for i in range(len(df)-length_for_times-after_times):
-    X.append(df.iloc[i:i+length_for_times, 1:].as_matrix())
+    X.append(df.iloc[i:i+length_for_times, 1:].as_matrix().flatten())
     # X_tmp.append(df.iloc[i:i+length_for_times, 1:])
 X = np.array(X)
 
@@ -88,7 +88,7 @@ for i in range(len(df)-length_for_times-after_times):
 
 y =  np.array(y)
 
-print(X.shape[2])
+print(X.shape)
 print(y.shape)
 
 
