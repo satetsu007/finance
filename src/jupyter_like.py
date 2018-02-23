@@ -11,6 +11,10 @@ import sys
 from IPython.display import display
 import seaborn as sns
 import scipy
+from sklearn.model_selection import train_test_split
+from keras.models import Sequential
+from keras.layers import Dense, Activation, Dropout, BatchNormalization, LSTM
+from keras.optimizers import Adam, SGD, RMSprop
 plt.style.use("ggplot")
 
 #%%
@@ -65,33 +69,49 @@ display(df_diff.describe())
 display(df_norm_diff.describe())
 
 #%%
-X = []
-X_tmp = []
-y = []
-y_tmp = []
+def set_data(df, target_label, length_for_times=1, after_times=1):
+    """
+    input: DataFrame, target_label, length_for_times, after_times
+    output: X, y
+    """
 
-length_for_times = 5
-after_times = 5
-target_label = "n225_CLOSE"
+    X = []
+    y = []
 
-for i in range(len(df)-length_for_times-after_times):
-    X.append(df.iloc[i:i+length_for_times, 1:].as_matrix().flatten())
-    # X_tmp.append(df.iloc[i:i+length_for_times, 1:])
-X = np.array(X)
+    for i in range(len(df)-length_for_times-after_times):
+        X.append(df.iloc[i:i+length_for_times, 1:].as_matrix().flatten())
 
-# X_tmp[:5]
+    for i in range(len(df)-length_for_times-after_times):
+        y.append(df[target_label].iloc[i-1+length_for_times+after_times])
+   
+    return np.array(X), np.array(y)
 
-for i in range(len(df)-length_for_times-after_times):
-    y.append(df[target_label].iloc[i-1+length_for_times+after_times])
-    # y_tmp.append(df[target_label].iloc[i-1+length_for_times+after_times])
-    # X_tmp.append(df.iloc[i-1+length_for_times+after_times])
-
-y =  np.array(y)
-
-print(X.shape)
-print(y.shape)
-
-
-
-display(df.iloc[:length_for_times + after_times])
 #%%
+target_label = "n225_CLOSE"
+length_for_times = 1
+after_times = 1
+batch_size = 128
+epochs = 10
+
+X, y = set_data(df, target_label,
+                length_for_times=length_for_times, after_times=after_times)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+
+n_in = X_train[1]
+n_out = 1
+
+#%%
+X_train[:10]
+
+#%%
+model = Sequential()
+model.add(Dense(128, input_dim=8))
+model.add(Activation("sigmoid"))
+model.add(Dense(128))
+model.add(Activation("sigmoid"))
+model.add(Dense(n_out))
+model.add(Activation("sigmoid"))
+
+model.compile(optimizer='sgd',
+                loss='mean_squared_error',
+                metrics=['accuracy'])

@@ -38,24 +38,24 @@ def main():
     # df_norm_diff = pd.concat([df.Date[1:], df_norm_diff], axis=1)
 
     target_label = "n225_CLOSE"
-    length_for_times = 5
-    after_times = 5
+    length_for_times = 1
+    after_times = 1
     batch_size = 128
-    epochs = 10
+    epochs = 100
     
 
     X, y = set_data(df, target_label,
                     length_for_times=length_for_times, after_times=after_times)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
 
-    n_in = X_train[1]
+    n_in = X_train.shape[1]
     n_out = 1
 
     print("define model.")
     model = set_model(n_in, n_out)
 
     print("train model.")
-    model.fit(X_train, y_train, batch_size=batch_size, validation_split=0.2, epochs=epochs)
+    history = model.fit(X_train, y_train, batch_size=batch_size, validation_split=0.2, epochs=epochs)
     
     print("test model.")
     y_pred = model.predict(X_test, batch_size=32)
@@ -65,6 +65,15 @@ def main():
     ax1.plot(y_test, color="red")
     ax2 = ax1.twinx()  # 2つのプロットを関連付ける
     ax2.plot(y_pred, color="blue")
+    plt.show()
+
+    #loss
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper right')
     plt.show()
 
 
@@ -92,16 +101,17 @@ def set_model(n_in, n_out):
     """
 
     model = Sequential()
-    model.add(Dense(128, input_shape=(n_in, )))
-    model.add(Activation("sigmoid"))
-    model.add(Dense(128))
-    model.add(Activation("sigmoid"))
+    model.add(Dense(1024, input_dim=(n_in)))
+    model.add(BatchNormalization())
+    model.add(Activation("relu"))
+    model.add(Dense(1024))
+    model.add(BatchNormalization())
+    model.add(Activation("relu"))
     model.add(Dense(n_out))
-    model.add(Activation("sigmoid"))
+    model.add(Activation("relu"))
     
-    model.compile(optimizer='sgd',
-                  loss='mean_squared_error',
-                  metrics=['accuracy'])
+    model.compile(optimizer='adam',
+                  loss='mean_squared_error')
 
     return model
 
